@@ -12,7 +12,7 @@ function showLogin() {
 
 function doLogin($user,$pass,$reging) {
 	if($reging===false){
-	}elseif{
+	}elseif(1=1)		{
 		
 	}else{
 		$body='<h1>Login failed! <a href="?">Try again?</a></h1>';
