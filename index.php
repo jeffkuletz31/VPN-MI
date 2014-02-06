@@ -1,21 +1,33 @@
 <?php
+//header("HTTP/1.1 302 Found");
+//header("Location: http://example.com/");
 
 //shows a login page
 function showLogin() {
-
+	$body='<form action="?" method="POST">
+	E-Mail (Must be valid):<input type="text" name="username"><br>
+	Password (Stored safe):<input type="password" name="password"></form>';
+	return $body;
 }
 
-function doLogin($user,$pass) {
-
+function doLogin($user,$pass,$reging) {
+	if($reging===false){
+	}elseif{
+		
+	}else{
+		$body='<h1>Login failed! <a href="?">Try again?</a></h1>';
+	}
+	return $body;
 }
 
-function showAdmin() {
+function showAdmin($token) {
 
+	return $body;
 }
 
-function doAdmin($task) {
+function doAdmin($task,$token) {
 
-
+	return $body;
 }
 
 function genHtml($body) {
@@ -69,14 +81,27 @@ function genHtml($body) {
 </script>
 </body>
 </html>';
+	print $html;
 }
 
-if(!isset($_POST["token"])){
-	if($_POST["action"]=="gentoken"){
-		if(isset($_POST["username"]) && isset($_POST["password"])){
-			doLogin()
+//Main flow control section. Handles what the user wants, and how we give it to them.
+if(!isset($_REQUEST["token"])){
+		if(isset($_REQUEST["username"]) && isset($_REQUEST["password"])){
+			//user has submitted the form for registering or logging in
+			//sha256 this shit <_<
+			$password=hash("sha256",$_REQUEST["password"]);
+			$username=urlencode(filter_var($_REQUEST["username"],FILTER_SANITIZE_EMAIL));
+			if($_REQUEST["action"]=="register"){
+				//user attempting to register
+				doLogin($username,$password,true);
+			}elseif($_REQUEST["action"]=="login"){
+				//user attempting to login
+				doLogin($username,$password,false);
+			}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 		}else{$body='<h1>Login failed! <a href="?">Try again?</a></h1>';}
-	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
+//	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 }else{
-
+//actual other junk here
+}
+genHtml($body);
 ?>
