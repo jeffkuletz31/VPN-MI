@@ -115,7 +115,7 @@ if(!isset($_REQUEST["token"])){
 				//user attempting to login
 				doLogin($username,$password,false);
 			}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
-		}else{$body='<h1>Login failed! <a href="?">Try again?</a></h1>';}
+		}else{$body=showLogin();}
 //	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 }else{
 //actual other junk here
