@@ -4,15 +4,32 @@
 
 //shows a login page
 function showLogin() {
-	$body='<form action="?" method="POST">
-	E-Mail (Must be valid):<input type="text" name="username"><br>
-	Password (Stored safe):<input type="password" name="password"></form>';
+	$body='<h1>Login!</h1><hr>
+<table border=0>
+<form action="?" method="POST">
+<tr>
+ <td>E-Mail:</td>
+ <td><input type="text" name="username"></td>
+</tr><tr>
+ <td>Password:</td>
+ <td><input type="password" name="password"></td>
+</tr>
+<tr>
+ <td>New user?</td>
+ <td><input type="radio" name="action" value="login" checked>Already registered<br>
+<input type="radio" name="action" value="register">Register me!</td></tr>
+<tr><td>
+<input type="submit" value="Login/Register!"></form>
+</td></tr>
+</table>';
 	return $body;
 }
 
 function doLogin($user,$pass,$reging) {
 	if($reging===false){
-	}elseif(1=1)		{
+		//check user/pass
+		
+	}elseif($reging===true){
 		
 	}else{
 		$body='<h1>Login failed! <a href="?">Try again?</a></h1>';
