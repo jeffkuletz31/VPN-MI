@@ -117,7 +117,8 @@ if(!isset($_REQUEST["token"])){
 			}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 		}else{$body=showLogin();}
 //	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
-}else{
+}elseif(isset($_REQUEST["token"])){
+	
 //actual other junk here
 }
 genHtml($body);
