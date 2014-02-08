@@ -28,9 +28,13 @@ function showLogin() {
 function doLogin($user,$pass,$reging) {
 	if($reging===false){
 		//check user/pass
-		
+		$body='login';
 	}elseif($reging===true){
-		
+		if(!isset($vpndata['users']['username'])){
+			//add user's username, password, and set the 'status' flag as "key required", later to be changed by the admin CP to 'key generated', and then if it's revoked, to 'key revoked' or something
+		}else{
+			//tell the user the email used to register is in use
+		}
 	}else{
 		$body='<h1>Login failed! <a href="?">Try again?</a></h1>';
 	}
@@ -110,15 +114,15 @@ if(!isset($_REQUEST["token"])){
 			$username=urlencode(filter_var($_REQUEST["username"],FILTER_SANITIZE_EMAIL));
 			if($_REQUEST["action"]=="register"){
 				//user attempting to register
-				doLogin($username,$password,true);
+				$body=doLogin($username,$password,true);
 			}elseif($_REQUEST["action"]=="login"){
 				//user attempting to login
-				doLogin($username,$password,false);
+				$body=doLogin($username,$password,false);
 			}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 		}else{$body=showLogin();}
 //	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 }elseif(isset($_REQUEST["token"])){
-	
+
 //actual other junk here
 }
 genHtml($body);
