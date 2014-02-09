@@ -5,8 +5,8 @@
 //shows a login page
 function showLogin() {
 	$body='<h1>Login!</h1><hr>
-<table border=0>
 <form action="?" method="POST">
+<table>
 <tr>
  <td>E-Mail:</td>
  <td><input type="text" name="username"></td>
@@ -16,12 +16,13 @@ function showLogin() {
 </tr>
 <tr>
  <td>New user?</td>
- <td><input type="radio" name="action" value="login" checked>Already registered<br>
+ <td><input type="radio" name="action" value="login" checked>Already registered<br><td></td>
 <input type="radio" name="action" value="register">Register me!</td></tr>
 <tr><td>
-<input type="submit" value="Login/Register!"></form>
+<input type="submit" value="Login/Register!">
 </td></tr>
-</table>';
+</table>
+</form>';
 	return $body;
 }
 
@@ -60,7 +61,7 @@ function genHtml($body) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StormBit VPN User Interface</title>
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-<style>body { padding-top: 50px; } .mainbody { padding: 40px 15px; text-align: center; }</style>
+<style>body { padding-top: 50px; } .mainbody { padding: 40px 15px; text-align: center; } .nocenter { text-align: left; }</style>
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top">
@@ -88,7 +89,7 @@ function genHtml($body) {
 </div>
 <div class="container">
 <div class="mainbody">
-<div align="left">';
+<div class="nocenter">';
 
 	//actual body text (forms, links, etc)
 	$html=$html.$body;
@@ -100,6 +101,7 @@ function genHtml($body) {
 </script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js">
 </script>
+</div>
 </body>
 </html>';
 	print $html;
