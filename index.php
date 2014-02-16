@@ -18,7 +18,7 @@ function showLogin() {
 </tr>
 <tr>
  <td>New user?</td>
- <td><input type="radio" name="action" value="login" checked>Already registered <input type="radio" name="action" value="register">Register me!<td></td>
+ <td><input type="radio" name="action" value="login" checked>Already registered <input type="radio" name="action" value="register">Register me!<td>
 </td></tr>
 <tr><td>
 <input type="submit" value="Login/Register!">
@@ -120,7 +120,7 @@ function genHtml($body) {
 							<li class="divider"></li>';
 //	if(isset($token)){ //commented out for testing
 		$html=$html.'
-							<li><a href="?action=getkey&token='.htmlspecialchars($token).'">Get Key/Config</a></li>
+							<li><a href="?action=getkey&amp;token='.htmlspecialchars($token).'">Get Key/Config</a></li>
 							<li><a href="?">Log Out</a></li>';
 //}
 // for some reason this whole dropdown won't move to the right side of the menubar, or even show its links. :(
@@ -150,7 +150,7 @@ function genHtml($body) {
 	$html=$html.'
 			</div>
 		</div>
-		<script src="//code.jquery.org/jquery-1.10.1.min.js"></script>
+		<script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 	</div>
 </body>
