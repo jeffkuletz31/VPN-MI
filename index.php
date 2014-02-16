@@ -39,19 +39,21 @@ function doLogin($username,$password,$reging) {
 	$token=hash("ripemd160",$username."-".$password);
 	if($reging===false){
 		//check user/pass
-		if ($vpndata['users'][$token]['username']==$username && $vpndata['users'][$token]['password']==$password){
-			$token=hash("ripemd160",$username."-".$password);
-			header("HTTP/1.1 302 Found");
-			if ($vpndata['users'][$token]['authority'] == 0){
-				header("Location: ?token=".$token."&action=getkey");
-				$body='<h1>Registered! <a href="?action=getkey&token='.$token.'>Get your key!</a></h1>';
+		if(isset($vpndata['users'][$token])){
+			if ($vpndata['users'][$token]['username']==$username && $vpndata['users'][$token]['password']==$password){
+				$token=hash("ripemd160",$username."-".$password);
+				header("HTTP/1.1 302 Found");
+				if ($vpndata['users'][$token]['authority'] == 0){
+					header("Location: ?token=".$token."&action=getkey");
+					$body='<h1>Registered! <a href="?action=getkey&token='.$token.'>Get your key!</a></h1>';
+				}else{
+					header("Location: ?token=".$token."&action=admin");
+					$body='<h1>Welcome, Administrator '.$username.'! <a href="?action=admin&token='.$token.'>Admin Control Panel</a></h1>';
+				}
 			}else{
-				header("Location: ?token=".$token."&action=admin");
-				$body='<h1>Welcome, Administrator '.$username.'! <a href="?action=admin&token='.$token.'>Admin Control Panel</a></h1>';
+				$body='<h1>Login incorrect!</h1>';
 			}
-		}else{
-			$body='<h1>Login incorrect!</h1>';
-		}
+		}else{$body='<h1>Login incorrect!</h1>';}
 	}elseif($reging===true){
 		if(!isset($vpndata['users'][$token])){
 			$token=hash("ripemd160",$username."-".$password);
@@ -62,7 +64,7 @@ function doLogin($username,$password,$reging) {
 			$vpndata['users'][$token]['status']='1';  //0 is active, 1 is ungenerated key, 2 is revoked/banned.
 			$vpndata['users'][$token]['token']=$token; 
 			$vpndata['users'][$token]['authority']='0';  //0 is user, 1 is admin
-			$body='<h1>You\'ve been registered! You need to send a payment to us in order for us to activate your account and generate your keys.</h1><br>Questions? <a href="irc://irc.stormbit.net/neo">See us on IRC!</a>"';
+			$body='<h1>You\'ve been registered! You need to send a payment to us in order for us to activate your account and generate your keys.</h1><br>Questions? <a href="irc://irc.stormbit.net/neo">See us on IRC!</a>';
 		}else{
 			$body='<h1>Registration failed! That email\'s already in use! Please use your Paypal account\'s associated address, otherwise we can\'t give you your VPN key.</h1>';
 			//tell the user the email used to register is in use
@@ -177,6 +179,7 @@ if(!isset($_REQUEST["token"])){
 //	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 }elseif(isset($_REQUEST["token"])){
 // Error checking and security junk
+if($_REQUEST["token"]==null){$body="<h1>Token invalid!";genHtml($body);exit();}
 $token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING,FILTER_SANITIZE_SPECIAL_CHARS);
 if(!isset($_REQUEST["action"]) || $_REQUEST["action"] == null ){$body="<h1>No action specified!";}
 	//User requesting a key!
