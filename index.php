@@ -176,19 +176,29 @@ if(!isset($_REQUEST["token"])){
 		}else{$body=showLogin();}
 //	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 }elseif(isset($_REQUEST["token"])){
+// Error checking and security junk
+$token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING,FILTER_SANITIZE_SPECIAL_CHARS);
 if(!isset($_REQUEST["action"]) || $_REQUEST["action"] == null ){$body="<h1>No action specified!";}
+	//User requesting a key!
 	if($_REQUEST["action"]=="getkey"){
 		if($vpndata['users'][$_REQUEST["token"]]['status']=='1'){
 			$body='<h1>Key is not active yet!</h1>';
 		}elseif($vpndata['users'][$_REQUEST["token"]]['status']=='2'){
 			$body='<h1 color="red">Account Banned!</h1>';
 		}else{
-			$doGen=false;
+			
 			$filename="/etc/openvpn/easy-rsa/2.0/keys/".$token.".ovpn";
-			header('Content-Type: application/octet-stream');
-			header("Content-Transfer-Encoding: Binary"); 
-			header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
-			readfile($filename);
+			if(!file_exists($filename)){
+				//exit with error!
+				$body="<h1>Key file not found!</h1>";
+			}else{
+				//send profile
+				$doGen=false;
+				header('Content-Type: application/octet-stream');
+				header("Content-Transfer-Encoding: Binary"); 
+				header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
+				readfile($filename);
+			}
 		}
 	}else{
 		$body='<h1>Action not implemented!</h1>';
@@ -196,7 +206,7 @@ if(!isset($_REQUEST["action"]) || $_REQUEST["action"] == null ){$body="<h1>No ac
 
 }
 
-if($doGen!==false){genHtml($body);}
+if(isset($doGen)){if($doGen!==false){genHtml($body);}}else{genHtml($body);}
 file_put_contents("/etc/openvpn/vpndata.json",json_encode($vpndata));
  
 ?>
