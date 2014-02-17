@@ -75,15 +75,9 @@ function doLogin($username,$password,$reging) {
 	return $body;
 }
 
-function showAdmin($token) {
-	global $vpndata;
-
-	return $body;
-}
-
 function doAdmin($task,$token) {
 	global $vpndata;
-
+	
 	return $body;
 }
 
@@ -119,21 +113,12 @@ function genHtml($body) {
 							<li><a href="http://stormbit.net/">Main Page</a></li>
 							<li><a href="http://goo.gl/EQixaU">Donate</a></li>
 							<li><a href="http://openvpn.net/index.php/open-source/downloads.html">Recommended VPN Client</a></li>
-							<li class="divider"></li>';
-//	if(isset($token)){ //commented out for testing
-		$html=$html.'
-							<li><a href="?action=getkey&amp;token='.htmlspecialchars($token).'">Get Key/Config</a></li>
-							<li><a href="?">Log Out</a></li>';
-//}
-// for some reason this whole dropdown won't move to the right side of the menubar, or even show its links. :(
-		//show the admin CP?
-		if ($isAdmin===true){
-		$html=$html.'
 							<li class="divider"></li>
-							<li><a href="#">Admin CP</a></li>';
-		}
-	$html=$html.'
-						</ul>
+							<li><a href="?action=getkey&amp;token='.htmlspecialchars($token).'">Get Key/Config</a></li>
+							<li><a href="?">Log Out</a></li>
+							<li class="divider"></li>
+							<li><a href="?token='.htmlspecialchars($token).'&amp;admin=main">Admin CP</a></li>
+							</ul>
 					</li>
 				</ul>
 			</div>
@@ -181,32 +166,42 @@ if(!isset($_REQUEST["token"])){
 // Error checking and security junk
 if($_REQUEST["token"]==null){$body="<h1>Token invalid!";genHtml($body);exit();}
 $token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING,FILTER_SANITIZE_SPECIAL_CHARS);
-if(!isset($_REQUEST["action"]) || $_REQUEST["action"] == null ){$body="<h1>No action specified!";}
-	//User requesting a key!
-	if($_REQUEST["action"]=="getkey"){
-		if($vpndata['users'][$_REQUEST["token"]]['status']=='1'){
-			$body='<h1>Key is not active yet!</h1>';
-		}elseif($vpndata['users'][$_REQUEST["token"]]['status']=='2'){
-			$body='<h1 color="red">Account Banned!</h1>';
-		}else{
-			
-			$filename="/etc/openvpn/easy-rsa/2.0/keys/".$token.".ovpn";
-			if(!file_exists($filename)){
-				//exit with error!
-				$body="<h1>Key file not found!</h1>";
+	if(!isset($_REQUEST["action"]) || $_REQUEST["action"] == null ){$body="<h1>No action specified!";}else{
+		//User requesting a key!
+		if($_REQUEST["action"]=="getkey"){
+			if($vpndata['users'][$_REQUEST["token"]]['status']=='1'){
+				$body='<h1>Key is not active yet!</h1>';
+			}elseif($vpndata['users'][$_REQUEST["token"]]['status']=='2'){
+				$body='<h1 color="red">Account Banned!</h1>';
 			}else{
-				//send profile
-				$doGen=false;
-				header('Content-Type: application/octet-stream');
-				header("Content-Transfer-Encoding: Binary"); 
-				header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
-				readfile($filename);
+				
+				$filename="/etc/openvpn/easy-rsa/2.0/keys/".$token.".ovpn";
+				if(!file_exists($filename)){
+					//exit with error!
+					$body="<h1>Key file not found!</h1>";
+				}else{
+					//send profile
+					$doGen=false;
+					header('Content-Type: application/octet-stream');
+					header("Content-Transfer-Encoding: Binary"); 
+					header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
+					readfile($filename);
+				}
+			}
+		}else{
+			$body='<h1>Action not implemented!</h1>';
+		}
+	}
+	if(!isset($_REQUEST["admin"]) || $_REQUEST["admin"] == null ){$body="<h1>No action specified!";}else{
+	//All admin functions
+		if($_REQUEST["admin"]=="main"){
+			if ($vpndata['users'][$token]['authority'] != 0){
+				
+			}else{
+				$body="<h1>You're not an admin!</h1>";
 			}
 		}
-	}else{
-		$body='<h1>Action not implemented!</h1>';
 	}
-
 }
 
 if(isset($doGen)){if($doGen!==false){genHtml($body);}}else{genHtml($body);}
