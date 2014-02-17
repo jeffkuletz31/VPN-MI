@@ -192,15 +192,14 @@ $token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING,FILTER_SANITIZE_SPE
 			$body='<h1>Action not implemented!</h1>';
 		}
 	}
-	if(!isset($_REQUEST["admin"]) || $_REQUEST["admin"] == null ){$body="<h1>No action specified!";}else{
+if(!isset($_REQUEST["admin"]) || $_REQUEST["admin"] == null ){$body="<h1>No action specified!";}else{
 	//All admin functions
+	if ($vpndata['users'][$token]['authority'] != 0){
 		if($_REQUEST["admin"]=="main"){
-			if ($vpndata['users'][$token]['authority'] != 0){
-				
-			}else{
-				$body="<h1>You're not an admin!</h1>";
-			}
+			#loop through our user list, sort 'em, and add approve key/deny or ban key, and email, and admin status
 		}
+	}else{
+		$body="<h1>You're not an admin!</h1>";
 	}
 }
 
