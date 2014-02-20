@@ -227,9 +227,9 @@ if(!isset($_REQUEST["token"])){
 						exec("/etc/openvpn/easy-rsa/2.0/usermgmt.sh ".$requestvare[0]." --delete");
 					}
 				}
-				header("HTTP/1.1 302 Found");
-				header("Location: ?token=".$token."&action=showadmin");
 			}
+			header("HTTP/1.1 302 Found");
+			header("Location: ?token=".$token."&action=showadmin");
 		}else{$body='<h1>Error!</h1>';}
 	}
 }
