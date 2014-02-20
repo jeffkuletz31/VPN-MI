@@ -219,12 +219,12 @@ if(!isset($_REQUEST["token"])){
 				if(isset($vpndata['users'][$requestvare[0]]["status"])){
 					if ($requestvare[1]=='zero'){
 						$vpndata['users'][$requestvare[0]]["status"]=0;
-						exec("/etc/openvpn/easy-rsa/2.0/add-user.sh ".$requestvare[0]." \"".$vpndata['users'][$requestvare[0]]['username']."\"");
+						exec("/etc/openvpn/easy-rsa/2.0/usermgmt.sh ".$requestvare[0]." \"".$vpndata['users'][$requestvare[0]]['username']."\"");
 					}elseif ($requestvare[1]=='one'){
 						$vpndata['users'][$requestvare[0]]["status"]=1;
 					}elseif ($requestvare[1]=='two'){
 						$vpndata['users'][$requestvare[0]]["status"]=2;
-						exec("/etc/openvpn/easy-rsa/2.0/del-user.sh ".$requestvare[0]);
+						exec("/etc/openvpn/easy-rsa/2.0/usermgmt.sh ".$requestvare[0]." --delete");
 					}
 				}
 				header("HTTP/1.1 302 Found");
