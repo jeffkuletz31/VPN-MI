@@ -21,7 +21,7 @@ function showLogin() {
  <td><input type="radio" name="action" value="login" checked>Already registered <input type="radio" name="action" value="register">Register me!<td>
 </td></tr>
 <tr><td>
-<input type="submit" value="Login/Register!">
+<input type="submit" class="btn btn-default" value="Login/Register!">
 </td></tr>
 </table>
 </form>
@@ -45,10 +45,10 @@ function doLogin($username,$password,$reging) {
 				header("HTTP/1.1 302 Found");
 				if ($vpndata['users'][$token]['authority'] == 0){
 					header("Location: ?token=".$token."&action=getkey");
-					$body='<h1>Registered! <a href="?action=getkey&token='.$token.'>Get your key!</a></h1>';
+					$body='<h1>Registered! <a href="?action=getkey&amp;token='.$token.'>Get your key!</a></h1>';
 				}else{
-					header("Location: ?token=".$token."&action=admin");
-					$body='<h1>Welcome, Administrator '.$username.'! <a href="?action=admin&token='.$token.'>Admin Control Panel</a></h1>';
+					header("Location: ?token=".$token."&action=showadmin");
+					$body='<h1>Welcome, Administrator '.$username.'! <a href="?action=showadmin&amp;token='.$token.'>Admin Control Panel</a></h1>';
 				}
 			}else{
 				$body='<h1>Login incorrect!</h1>';
@@ -106,8 +106,8 @@ function genHtml($body) {
 				<a class="navbar-brand" href="#">StormBit VPN</a>
 			</div>
 			<div class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li class="dropdown navbar-right">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span><b class="caret"></b></a>
 							<ul class="dropdown-menu">
 							<li><a href="http://stormbit.net/">Main Page</a></li>
@@ -117,7 +117,7 @@ function genHtml($body) {
 							<li><a href="?action=getkey&amp;token='.htmlspecialchars($token).'">Get Key/Config</a></li>
 							<li><a href="?">Log Out</a></li>
 							<li class="divider"></li>
-							<li><a href="?token='.htmlspecialchars($token).'&amp;admin=main">Admin CP</a></li>
+							<li><a href="?token='.htmlspecialchars($token).'&amp;action=showadmin">Admin CP</a></li>
 							</ul>
 					</li>
 				</ul>
@@ -163,47 +163,79 @@ if(!isset($_REQUEST["token"])){
 		}else{$body=showLogin();}
 //	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
 }elseif(isset($_REQUEST["token"])){
-// Error checking and security junk
-if($_REQUEST["token"]==null){$body="<h1>Token invalid!";genHtml($body);exit();}
-$token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING,FILTER_SANITIZE_SPECIAL_CHARS);
-	if(!isset($_REQUEST["action"]) || $_REQUEST["action"] == null ){$body="<h1>No action specified!";}else{
-		//User requesting a key!
+	// Error checking and security junk
+	if($_REQUEST["token"]==null){$body="<h1>Token invalid!</h1>";genHtml($body);exit();}
+	$token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING,FILTER_SANITIZE_SPECIAL_CHARS);
+	if(isset($_REQUEST["action"])&& $_REQUEST["action"] == null ){$body="<h1>No action specified!</h1>";}else{
 		if($_REQUEST["action"]=="getkey"){
+			//user requesting a key. Check their access privileges.
 			if($vpndata['users'][$_REQUEST["token"]]['status']=='1'){
 				$body='<h1>Key is not active yet!</h1>';
 			}elseif($vpndata['users'][$_REQUEST["token"]]['status']=='2'){
 				$body='<h1 color="red">Account Banned!</h1>';
 			}else{
-				
+				//User is go for key, check if key actually is there.
 				$filename="/etc/openvpn/easy-rsa/2.0/keys/".$token.".ovpn";
 				if(!file_exists($filename)){
 					//exit with error!
 					$body="<h1>Key file not found!</h1>";
 				}else{
-					//send profile
-					$doGen=false;
 					header('Content-Type: application/octet-stream');
 					header("Content-Transfer-Encoding: Binary"); 
 					header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
 					readfile($filename);
+					exit();
 				}
 			}
-		}else{
-			$body='<h1>Action not implemented!</h1>';
-		}
-	}
-if(!isset($_REQUEST["admin"]) || $_REQUEST["admin"] == null ){$body="<h1>No action specified!";}else{
-	//All admin functions
-	if ($vpndata['users'][$token]['authority'] != 0){
-		if($_REQUEST["admin"]=="main"){
-			#loop through our user list, sort 'em, and add approve key/deny or ban key, and email, and admin status
-		}
-	}else{
-		$body="<h1>You're not an admin!</h1>";
+		}elseif($_REQUEST["action"]=="showadmin"){
+			if($vpndata['users'][$token]['authority'] != 1){$body="<h1>You're not an admin!</h1>";genHtml($body);exit();}
+			$body='<form action="?token='.$token.'&amp;action=doadmin" method="POST">';
+			$body=$body.'<h2>Inactive Users</h2><br><table class="table table=striped">';
+			foreach($vpndata['users'] as &$listuser){
+				if ($listuser['status']==1){
+					//print Unchanged, Activate or Deny options
+					$body=$body.'<tr>
+					<td>'.$listuser["username"].'</td>
+					<td><input type="radio" name="'.$listuser['token'].'-status" value="'.$listuser['token'].'-one" checked>Unchanged</td>
+					<td><input type="radio" name="'.$listuser['token'].'-status" value="'.$listuser['token'].'-zero">Approve</td>
+					<td><input type="radio" name="'.$listuser['token'].'-status" value="'.$listuser['token'].'-two">Deny</td></tr>';
+				}
+			}
+			$body=$body.'</table><br><h2>Active Users</h2><br><table class="table table=striped">';
+			foreach($vpndata['users'] as &$listuser){
+				if ($listuser['status']==0){
+					//print Active or Banned options
+					$body=$body.'<tr>
+					<td>'.$listuser["username"].'</td>
+					<td><input type="radio" name="'.$listuser['token'].'-status" value="'.$listuser['token'].'-zero" checked>Active</td>
+					<td><input type="radio" name="'.$listuser['token'].'-status" value="'.$listuser['token'].'-two">Banned</td></tr>';
+				}
+			}
+			$body=$body.'</table><br><button type="submit" class="btn btn-default">Submit</button>';
+		}elseif($_REQUEST["action"]=="doadmin"){
+			if($vpndata['users'][$token]['authority'] != 1){$body="<h1>You're not an admin!</h1>";genHtml($body);exit();}
+			foreach($_REQUEST as $requestvar){
+				$requestvare=explode('-',$requestvar);
+				if(isset($vpndata['users'][$requestvare[0]]["status"])){
+					if ($requestvare[1]=='zero'){
+						$vpndata['users'][$requestvare[0]]["status"]=0;
+						exec("/etc/openvpn/easy-rsa/2.0/add-user.sh ".$requestvare[0]." \"".$vpndata['users'][$requestvare[0]]['username']."\"");
+					}elseif ($requestvare[1]=='one'){
+						$vpndata['users'][$requestvare[0]]["status"]=1;
+					}elseif ($requestvare[1]=='two'){
+						$vpndata['users'][$requestvare[0]]["status"]=2;
+						exec("/etc/openvpn/easy-rsa/2.0/del-user.sh ".$requestvare[0]);
+					}
+				}
+				header("HTTP/1.1 302 Found");
+				header("Location: ?token=".$token."&action=showadmin");
+			}
+		}else{$body='<h1>Error!</h1>';}
 	}
 }
-
-if(isset($doGen)){if($doGen!==false){genHtml($body);}}else{genHtml($body);}
+//if(isset($doGen)){if($doGen!==false){genHtml($body);}}else{
+genHtml($body);
+//}
 file_put_contents("/etc/openvpn/vpndata.json",json_encode($vpndata));
- 
+
 ?>
