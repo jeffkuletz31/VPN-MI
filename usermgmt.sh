@@ -34,28 +34,27 @@ if [ $2 == "--delete" ]; then
 	deleteKey $1
 fi
 
-function deleteKey($keyname) {
+deleteKey () {
 	if [ "$KEY_DIR" ]; then
 		cd "$KEY_DIR"
 		rm -f "$RT"
 		export KEY_CN=""
 		export KEY_OU=""
 		export KEY_NAME=""
-		$OPENSSL ca -revoke "$keyname.crt" -config "$KEY_CONFIG"
+		$OPENSSL ca -revoke "$1.crt" -config "$KEY_CONFIG"
 		$OPENSSL ca -gencrl -out "$CRL" -config "$KEY_CONFIG"
 		if [ -e export-ca.crt ]; then
 			cat export-ca.crt "$CRL" >"$RT"
 		else
 			cat ca.crt "$CRL" >"$RT"
 		fi
-		$OPENSSL verify -CAfile "$RT" -crl_check "$keyname.crt"
+		$OPENSSL verify -CAfile "$RT" -crl_check "$1.crt"
 	fi
-fi
 }
 "$EASY_RSA/pkitool" $1
 #this used to be able to generate a pkcs12 cert file for use with Android scripts, but I can't automate it, so users'll have to do it themselves. user.crt is from the <cert> tags in the config, user.key from <key> tags, and ca.crt from <ca> tags. Just copy the contents of each tag, sans-tags themselves to the files, and run this:
 #openssl pkcs12 -export -in user.crt -inkey user.key -certfile ca.crt -name user -out user.p12
-
+sleep 1
 #generate config. Edit as necessary.
 echo 'dev tun
 proto udp
