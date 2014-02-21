@@ -74,7 +74,7 @@ How do I work this thing?!
 		server.conf -- See Server Config section
 		<other files>
 
-####Generating server configurations and certificates.
+####Generating server certificates.
 
 	cd /etc/openvpn/easy-rsa/2.0/
 	Edit ./vars AND usermgmt.sh so that both sets of variables MATCH! Not doing so can cause issues!
