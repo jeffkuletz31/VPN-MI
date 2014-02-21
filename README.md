@@ -17,38 +17,39 @@ How do I work this thing?!
 1. Get your server set up. If you're on a Debian or Ubuntu machine:
 
 **** Server configuration: /etc/openvpn/server.conf ****
-<tt>
-mode server
-tls-server
-port 52 #Change this
-proto udp
-dev tap
-persist-key
-persist-tun
-ca /etc/openvpn/easy-rsa/2.0/keys/ca.crt
-cert /etc/openvpn/easy-rsa/2.0/keys/server.crt
-key /etc/openvpn/easy-rsa/2.0/keys/server.key
-dh /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem
-#tls-auth /etc/openvpn/easy-rsa/2.0/keys/ta.key 0
-cipher BF-CBC
-comp-lzo
-ifconfig 10.8.0.1 10.8.0.2
-server 10.8.0.0 255.255.255.252
-push "redirect-gateway def1 bypass-dhcp"
-push "dhcp-option DNS 8.8.8.8"
-push "dhcp-option DNS 8.8.4.4"
-push "dhcp-option WINS 10.8.0.1" #If you want a WINS server (samba) setup and visible in the VPN, set this!
-push "dhcp-option DOMAIN supernova.arghargh200.net"  #Change this!
-keepalive 10 120
-status /var/log/openvpn-status.log
-log-append /etc/openvpn/server.log
-verb 3
-duplicate-cn #Allows our clients to use multiple clients at a time with one key.
-client-to-client #allows our clients to talk to each other
-comp-lzo
-crl-verify /etc/openvpn/easy-rsa/2.0/keys/crl.pem #IMPORTANT! This is used for banning users and revoking their keys!
-</tt>
+
+	mode server
+	tls-server
+	port 52 #Change this
+	proto udp
+	dev tap
+	persist-key
+	persist-tun
+	ca /etc/openvpn/easy-rsa/2.0/keys/ca.crt
+	cert /etc/openvpn/easy-rsa/2.0/keys/server.crt
+	key /etc/openvpn/easy-rsa/2.0/keys/server.key
+	dh /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem
+	#tls-auth /etc/openvpn/easy-rsa/2.0/keys/ta.key 0
+	cipher BF-CBC
+	comp-lzo
+	ifconfig 10.8.0.1 10.8.0.2
+	server 10.8.0.0 255.255.255.252
+	push "redirect-gateway def1 bypass-dhcp"
+	push "dhcp-option DNS 8.8.8.8"
+	push "dhcp-option DNS 8.8.4.4"
+	push "dhcp-option WINS 10.8.0.1" #If you want a WINS server (samba) setup and visible in the VPN, set this!
+	push "dhcp-option DOMAIN supernova.arghargh200.net"  #Change this!
+	keepalive 10 120
+	status /var/log/openvpn-status.log
+	log-append /etc/openvpn/server.log
+	verb 3
+	duplicate-cn #Allows our clients to use multiple clients at a time with one key.
+	client-to-client #allows our clients to talk to each other
+	comp-lzo
+	crl-verify /etc/openvpn/easy-rsa/2.0/keys/crl.pem #IMPORTANT! This is used for banning users and revoking their keys!
+
 **** An average directory structure ****
+
 	/etc/openvpn/
 		easy-rsa/
 			1.0/ <irrelevant>
@@ -86,13 +87,13 @@ crl-verify /etc/openvpn/easy-rsa/2.0/keys/crl.pem #IMPORTANT! This is used for b
 
 ****Setting up StormBitVPN MI****
 
-Copy the index.php script to a desired location. You can change the name if you wish.
+*  Copy the index.php script to a desired location. You can change the name if you wish.
 
-Copy the usermgmt.sh backend script to your easy-rsa/2.0 folder and make it executable (chmod +x usrmgmt.sh)
+*  Copy the usermgmt.sh backend script to your easy-rsa/2.0 folder and make it executable (chmod +x usrmgmt.sh)
 
-Edit usermgmt.sh to match the variables within /etc/openvpn/easy-rsa/2.0/vars
+*  Edit usermgmt.sh to match the variables within /etc/openvpn/easy-rsa/2.0/vars
 
-Start your server! You may need to make and then revoke a key to get it to start:
+*  Start your server! You may need to make and then revoke a key to get it to start:
 
 	./usermgmt.sh revoked-test revoked@test
 	./usermgmt.sh revoked-test --delete
