@@ -4,7 +4,7 @@ StormBit VPN Management Interface
 What the heck is it?
 ---------------------
 
-It's a management interface for our VPN service. It allows users to register, login, and download their generated client config and keys.
+It's a management interface for our VPN service. It allows users to register, login, and download their generated client config and keys, and have the ability to revoke and approve users. We don't plan to add a payment portal, but maybe later :)
 
 Why? Isn't there stuff out there that does just that?
 -----------------
