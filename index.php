@@ -7,7 +7,7 @@ $vpndata=json_decode(file_get_contents("/etc/openvpn/vpndata.json"),true);
 //shows a login page
 function showLogin() {
 	$body='<h1>Login!</h1><hr>
-<form action="?" method="GET">
+<form action="?" type="multipart/form-data" method="POST">
 <table>
 <tr>
  <td>Paypal E-Mail:</td>
@@ -175,17 +175,33 @@ if(!isset($_REQUEST["token"])){
 				$body='<h1 color="red">Account Banned!</h1>';
 			}else{
 				//User is go for key, check if key actually is there.
-				$filename="/etc/openvpn/easy-rsa/2.0/keys/".$token.".ovpn";
-				if(!file_exists($filename)){
-					//exit with error!
-					$body="<h1>Key file not found!</h1>";
-				}else{
-					header('Content-Type: application/octet-stream');
-					header("Content-Transfer-Encoding: Binary"); 
-					header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
-					readfile($filename);
-					exit();
-				}
+				$usercrt="/etc/openvpn/easy-rsa/2.0/keys/".$token.".crt";
+				$userkey="/etc/openvpn/easy-rsa/2.0/keys/".$token.".key";
+				$cacrt="/etc/openvpn/easy-rsa/2.0/keys/ca.crt";
+				$cfgtmpl="/etc/openvpn/easy-rsa/2.0/keys/template.ovpn";
+				if(!file_exists($usercrt)){$body="<h1>User Cert not found!</h1>";genHtml();exit();}
+				if(!file_exists($userkey)){$body="<h1>User Key not found!</h1>";genHtml();exit();}
+				if(!file_exists($cacrt)){$body="<h1>CA File Not Found!</h1>";genHtml();exit();}
+				if(!file_exists($cfgtmpl)){$body="<h1>Stock Config!</h1>";genHtml();exit();}
+				header('Content-Type: application/octet-stream');
+				header("Content-Transfer-Encoding: Binary"); 
+				header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
+				readfile($cfgtmpl);
+				print '
+<ca>';
+				readfile($cacrt);
+				print '
+</ca>
+<key>';
+				readfile($userkey);
+				print '
+</key>
+<cert>';
+				readfile($usercert);
+				print '
+</cert>';
+				exit();
+				
 			}
 		}elseif($_REQUEST["action"]=="showadmin"){
 			if($vpndata['users'][$token]['authority'] != 1){$body="<h1>You're not an admin!</h1>";genHtml($body);exit();}
