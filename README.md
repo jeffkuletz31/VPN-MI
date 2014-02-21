@@ -17,6 +17,7 @@ How do I work this thing?!
 1. Get your server set up. If you're on a Debian or Ubuntu machine:
 
 **** Server configuration: /etc/openvpn/server.conf ****
+<tt>
 mode server
 tls-server
 port 52 #Change this
@@ -46,7 +47,7 @@ duplicate-cn #Allows our clients to use multiple clients at a time with one key.
 client-to-client #allows our clients to talk to each other
 comp-lzo
 crl-verify /etc/openvpn/easy-rsa/2.0/keys/crl.pem #IMPORTANT! This is used for banning users and revoking their keys!
-
+</tt>
 **** An average directory structure ****
 	/etc/openvpn/
 		easy-rsa/
