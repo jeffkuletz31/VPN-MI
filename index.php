@@ -179,27 +179,34 @@ if(!isset($_REQUEST["token"])){
 				$userkey="/etc/openvpn/easy-rsa/2.0/keys/".$token.".key";
 				$cacrt="/etc/openvpn/easy-rsa/2.0/keys/ca.crt";
 				$cfgtmpl="/etc/openvpn/easy-rsa/2.0/keys/template.ovpn";
-				if(!file_exists($usercrt)){$body="<h1>User Cert not found!</h1>";genHtml();exit();}
-				if(!file_exists($userkey)){$body="<h1>User Key not found!</h1>";genHtml();exit();}
-				if(!file_exists($cacrt)){$body="<h1>CA File Not Found!</h1>";genHtml();exit();}
-				if(!file_exists($cfgtmpl)){$body="<h1>Stock Config!</h1>";genHtml();exit();}
+				if(!file_exists($usercrt)){$body="<h1>User Cert not found!</h1>";genHtml($body);exit();}
+				if(!file_exists($userkey)){$body="<h1>User Key not found!</h1>";genHtml($body);exit();}
+				if(!file_exists($cacrt)){$body="<h1>CA File Not Found!</h1>";genHtml($body);exit();}
+				if(!file_exists($cfgtmpl)){$body="<h1>Stock Config!</h1>";genHtml($body);exit();}
 				header('Content-Type: application/octet-stream');
 				header("Content-Transfer-Encoding: Binary"); 
-				header("Content-disposition: attachment; filename=\"" . basename($filename) . "\""); 
+				header("Content-disposition: attachment; filename=\"" . $token . ".ovpn\""); 
 				readfile($cfgtmpl);
 				print '
-<ca>';
+
+<ca>
+';
 				readfile($cacrt);
 				print '
 </ca>
-<key>';
+
+<key>
+';
 				readfile($userkey);
 				print '
 </key>
-<cert>';
-				readfile($usercert);
+
+<cert>
+';
+				readfile($usercrt);
 				print '
-</cert>';
+</cert>
+';
 				exit();
 				
 			}
