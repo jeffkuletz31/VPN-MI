@@ -10,11 +10,6 @@ export KEY_EMAIL="$2"
 export CRL="crl.pem"
 export RT="revoke-test.pem"
 
-
-if [ $2 == "--delete" ]; then
-	deleteKey $1
-fi
-
 deleteKey () {
 	if [ "$KEY_DIR" ]; then
 		cd "$KEY_DIR"
@@ -32,4 +27,10 @@ deleteKey () {
 		$OPENSSL verify -CAfile "$RT" -crl_check "$1.crt"
 	fi
 }
+
+if [ $2 == "--delete" ]; then
+	deleteKey $1
+	exit 0
+fi
+
 "$EASY_RSA/pkitool" $1
