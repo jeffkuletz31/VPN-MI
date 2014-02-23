@@ -195,25 +195,25 @@ if(!isset($_REQUEST["token"])){
 				if(!file_exists($usercrt)){$body="<h1>User Cert not found!</h1>";genHtml($body);exit();}
 				if(!file_exists($userkey)){$body="<h1>User Key not found!</h1>";genHtml($body);exit();}
 				if(!file_exists($cacrt)){$body="<h1>CA File Not Found!</h1>";genHtml($body);exit();}
-				if(!file_exists($cfgtmpl)){$body="<h1>Stock Config!</h1>";genHtml($body);exit();}
+				if(!file_exists($cfgtmpl)){$body="<h1>Stock Config Not Found!</h1>";genHtml($body);exit();}
 				header('Content-Type: application/octet-stream');
 				header("Content-Transfer-Encoding: Binary"); 
 				header("Content-disposition: attachment; filename=\"" . $token . ".ovpn\""); 
-				$ovpn=readfile($cfgtmpl);
+				$ovpn=file_get_contents($cfgtmpl);
 				$ovpn=$ovpn.'
-				<ca>
+<ca>
 ';
-				$ovpn=$ovpn.readfile($cacrt);
+				$ovpn=$ovpn.file_get_contents($cacrt);
 				$ovpn=$ovpn.'
 </ca>
 <key>
 ';
-				$ovpn=$ovpn.readfile($userkey);
+				$ovpn=$ovpn.file_get_contents($userkey);
 				$ovpn=$ovpn.'
 </key>
 <cert>
 ';
-				$ovpn=$ovpn.readfile($usercrt);
+				$ovpn=$ovpn.file_get_contents($usercrt);
 				$ovpn=$ovpn.'
 </cert>
 ';
