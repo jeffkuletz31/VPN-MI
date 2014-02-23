@@ -145,6 +145,19 @@ function genHtml($body) {
 	print $html;
 }
 
+// Source: http://darklaunch.com/2009/05/06/php-normalize-newlines-line-endings-crlf-cr-lf-unix-windows-mac
+function normalize($s) {
+    // Normalize line endings
+    // Convert all line-endings to Windows format
+    $s = str_replace("\r\n", "\n", $s);
+    $s = str_replace("\r", "\n", $s);
+    // Don't allow out-of-control blank lines
+    $s = preg_replace("/\n{2,}/", "\n\n", $s);
+	//Windows-ify
+    $s = str_replace("\n", "\r\n", $s);
+    return $s;
+}
+
 //Main flow control section. Handles what the user wants, and how we give it to them.
 if(!isset($_REQUEST["token"])){
 		if(isset($_REQUEST["username"]) && isset($_REQUEST["password"])){
@@ -186,27 +199,25 @@ if(!isset($_REQUEST["token"])){
 				header('Content-Type: application/octet-stream');
 				header("Content-Transfer-Encoding: Binary"); 
 				header("Content-disposition: attachment; filename=\"" . $token . ".ovpn\""); 
-				readfile($cfgtmpl);
-				print '
-
-<ca>
+				$ovpn=readfile($cfgtmpl);
+				$ovpn=$ovpn.'
+				<ca>
 ';
-				readfile($cacrt);
-				print '
+				$ovpn=$ovpn.readfile($cacrt);
+				$ovpn=$ovpn.'
 </ca>
-
 <key>
 ';
-				readfile($userkey);
-				print '
+				$ovpn=$ovpn.readfile($userkey);
+				$ovpn=$ovpn.'
 </key>
-
 <cert>
 ';
-				readfile($usercrt);
-				print '
+				$ovpn=$ovpn.readfile($usercrt);
+				$ovpn=$ovpn.'
 </cert>
 ';
+				print normalize($ovpn);
 				exit();
 				
 			}

@@ -36,8 +36,21 @@ Edit ./vars to match values you like. Don't change the 'server' parts! Then:
 
 *  Start your server! You may need to make and then revoke a key to get it to start:
 
-		./usermgmt.sh revoked-test revoked@test
-		./usermgmt.sh revoked-test --delete
+		./usermgmt.sh revoked-key revoked@key
+		./usermgmt.sh revoked-key --delete
+		
+####Troubleshooting
+
+*	If you're not able to connect, and your VPN configuration looks like it's all mushed up on one line, or has ^Ms on the end of each line you may need to change the line endings on it. Notepad++ is capable of doing this. By default the configs will use Windows (CRLF) Line Endings.
+
+*	If your server starts, but when you connect, it exits, you have not created a Certificate Revocation File. That can be done like so:
+
+	./usermgmt.sh revoked-key revoked@key
+	./usermgmt.sh revoked-key --delete
+
+*	If your clients disconnect with a message that resembles "Certification is not yet valid", your clients' clocks and the server clock are not synced.
+
+*	If there's something wrong with this software that wasn't noted in a Git commit message, [jump on IRC and let me know!](http://iris.stormbit.net/?nick=Guest.....&channels=stormbitgames&prompt=1)
 
 Sources and helpful links
 ---------------
