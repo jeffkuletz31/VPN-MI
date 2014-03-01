@@ -1,10 +1,21 @@
 <?php
+/**
+ * stormbitvpn/index.php
+ *
+ * @package default
+ */
+
 
 //load user data if it exists, otherwise make it exist
-if(!file_exists("/etc/openvpn/vpndata.json")){file_put_contents("/etc/openvpn/vpndata.json","{}");}
-$vpndata=json_decode(file_get_contents("/etc/openvpn/vpndata.json"),true);
+if (!file_exists("/etc/openvpn/vpndata.json")) {file_put_contents("/etc/openvpn/vpndata.json", "{}");}
+$vpndata=json_decode(file_get_contents("/etc/openvpn/vpndata.json"), true);
 
-//shows a login page
+
+/**
+ * shows a login page
+ *
+ * @return unknown
+ */
 function showLogin() {
 	$body='<h1>Login!</h1><hr>
 <form action="?" type="multipart/form-data" method="POST">
@@ -34,53 +45,73 @@ These rules are subject to change at any time, and it is your duty to know! If y
 	return $body;
 }
 
-function doLogin($username,$password,$reging) {
+
+/**
+ *
+ * @param unknown $username
+ * @param unknown $password
+ * @param unknown $reging
+ * @return unknown
+ */
+function doLogin($username, $password, $reging) {
 	global $vpndata;
-	$token=hash("ripemd160",$username."-".$password);
-	if($reging===false){
+	$token=hash("ripemd160", $username."-".$password);
+	if ($reging===false) {
 		//check user/pass
-		if(isset($vpndata['users'][$token])){
-			if ($vpndata['users'][$token]['username']==$username && $vpndata['users'][$token]['password']==$password){
-				$token=hash("ripemd160",$username."-".$password);
+		if (isset($vpndata['users'][$token])) {
+			if ($vpndata['users'][$token]['username']==$username && $vpndata['users'][$token]['password']==$password) {
+				$token=hash("ripemd160", $username."-".$password);
 				header("HTTP/1.1 302 Found");
-				if ($vpndata['users'][$token]['authority'] == 0){
+				if ($vpndata['users'][$token]['authority'] == 0) {
 					header("Location: ?token=".$token."&action=getkey");
 					$body='<h1>Registered! <a href="?action=getkey&amp;token='.$token.'>Get your key!</a></h1>';
-				}else{
+				}else {
 					header("Location: ?token=".$token."&action=showadmin");
 					$body='<h1>Welcome, Administrator '.$username.'! <a href="?action=showadmin&amp;token='.$token.'>Admin Control Panel</a></h1>';
 				}
-			}else{
+			}else {
 				$body='<h1>Login incorrect!</h1>';
 			}
-		}else{$body='<h1>Login incorrect!</h1>';}
-	}elseif($reging===true){
-		if(!isset($vpndata['users'][$token])){
-			$token=hash("ripemd160",$username."-".$password);
+		}else {$body='<h1>Login incorrect!</h1>';}
+	}elseif ($reging===true) {
+		if (!isset($vpndata['users'][$token])) {
+			$token=hash("ripemd160", $username."-".$password);
 			//store user data into array
 			$vpndata['users'][$token]['username']=$username;  //WHOA GEEZ NO WAY
 			$vpndata['users'][$token]['password']=$password;  //sha256'd, don't worry
 			$vpndata['users'][$token]['regtime']=time(); //for possible expiration of unactivated accounts? idk
 			$vpndata['users'][$token]['status']='1';  //0 is active, 1 is ungenerated key, 2 is revoked/banned.
-			$vpndata['users'][$token]['token']=$token; 
+			$vpndata['users'][$token]['token']=$token;
 			$vpndata['users'][$token]['authority']='0';  //0 is user, 1 is admin
 			$body='<h1>You\'ve been registered! You need to send a payment to us in order for us to activate your account and generate your keys.</h1><br>Questions? <a href="irc://irc.stormbit.net/neo">See us on IRC!</a>';
-		}else{
+		}else {
 			$body='<h1>Registration failed! That email\'s already in use! Please use your Paypal account\'s associated address, otherwise we can\'t give you your VPN key.</h1>';
 			//tell the user the email used to register is in use
 		}
-	}else{
+	}else {
 		$body='<h1>Login failed! <a href="?">Try again?</a></h1>';
 	}
 	return $body;
 }
 
-function doAdmin($task,$token) {
+
+/**
+ *
+ * @param unknown $task
+ * @param unknown $token
+ * @return unknown
+ */
+function doAdmin($task, $token) {
 	global $vpndata;
-	
+
 	return $body;
 }
 
+
+/**
+ *
+ * @param unknown $body
+ */
 function genHtml($body) {
 	global $token;
 	global $isAdmin;
@@ -91,7 +122,7 @@ function genHtml($body) {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>StormBit VPN User Interface</title>
-	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/resources/bootstrap.css" rel="stylesheet">
 	<style>body { padding-top: 50px; } .mainbody { padding: 40px 15px; text-align: center; } .nocenter { text-align: left; }</style>
 </head>
 <body>
@@ -137,68 +168,75 @@ function genHtml($body) {
 	$html=$html.'
 			</div>
 		</div>
-		<script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
-		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+		<script src="/resources/jquery.js"></script>
+		<script src="/resources/bootstrap.js"></script>
 	</div>
 </body>
 </html>';
 	print $html;
 }
 
-// Source: http://darklaunch.com/2009/05/06/php-normalize-newlines-line-endings-crlf-cr-lf-unix-windows-mac
+
+/**
+ * Source: http://darklaunch.com/2009/05/06/php-normalize-newlines-line-endings-crlf-cr-lf-unix-windows-mac
+ *
+ * @param unknown $s
+ * @return unknown
+ */
 function normalize($s) {
-    // Normalize line endings
-    // Convert all line-endings to Windows format
-    $s = str_replace("\r\n", "\n", $s);
-    $s = str_replace("\r", "\n", $s);
-    // Don't allow out-of-control blank lines
-    $s = preg_replace("/\n{2,}/", "\n\n", $s);
+	// Normalize line endings
+	// Convert all line-endings to Windows format
+	$s = str_replace("\r\n", "\n", $s);
+	$s = str_replace("\r", "\n", $s);
+	// Don't allow out-of-control blank lines
+	$s = preg_replace("/\n{2,}/", "\n\n", $s);
 	//Windows-ify
-    $s = str_replace("\n", "\r\n", $s);
-    return $s;
+	$s = str_replace("\n", "\r\n", $s);
+	return $s;
 }
 
+
 //Main flow control section. Handles what the user wants, and how we give it to them.
-if(!isset($_REQUEST["token"])){
-		if(isset($_REQUEST["username"]) && isset($_REQUEST["password"])){
-			//user has submitted the form for registering or logging in
-			//sha256 this shit <_<
-			$password=hash("sha256",$_REQUEST["password"]);
-			$username=filter_var($_REQUEST["username"],FILTER_SANITIZE_EMAIL);
-			$token=hash("ripemd160",$username."-".$password);
-			if($_REQUEST["action"]=="register"){
-				//user attempting to register
-				$body=doLogin($username,$password,true);
-			}elseif($_REQUEST["action"]=="login"){
-				//user attempting to login
-				$body=doLogin($username,$password,false);
-			}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
-		}else{$body=showLogin();}
-//	}else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
-}elseif(isset($_REQUEST["token"])){
+if (!isset($_REQUEST["token"])) {
+	if (isset($_REQUEST["username"]) && isset($_REQUEST["password"])) {
+		//user has submitted the form for registering or logging in
+		//sha256 this shit <_<
+		$password=hash("sha256", $_REQUEST["password"]);
+		$username=filter_var($_REQUEST["username"], FILTER_SANITIZE_EMAIL);
+		$token=hash("ripemd160", $username."-".$password);
+		if ($_REQUEST["action"]=="register") {
+			//user attempting to register
+			$body=doLogin($username, $password, true);
+		}elseif ($_REQUEST["action"]=="login") {
+			//user attempting to login
+			$body=doLogin($username, $password, false);
+		}else {$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
+	}else {$body=showLogin();}
+	// }else{$body='<h1>You\'re not logged in! <a href="?">Wanna?</a></h1>';}
+}elseif (isset($_REQUEST["token"])) {
 	// Error checking and security junk
-	if($_REQUEST["token"]==null){$body="<h1>Token invalid!</h1>";genHtml($body);exit();}
-	$token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING,FILTER_SANITIZE_SPECIAL_CHARS);
-	if(isset($_REQUEST["action"])&& $_REQUEST["action"] == null ){$body="<h1>No action specified!</h1>";}else{
-		if($_REQUEST["action"]=="getkey"){
+	if ($_REQUEST["token"]==null) {$body="<h1>Token invalid!</h1>";genHtml($body);exit();}
+	$token=filter_var($_REQUEST['token'], FILTER_SANITIZE_STRING, FILTER_SANITIZE_SPECIAL_CHARS);
+	if (isset($_REQUEST["action"])&& $_REQUEST["action"] == null ) {$body="<h1>No action specified!</h1>";}else {
+		if ($_REQUEST["action"]=="getkey") {
 			//user requesting a key. Check their access privileges.
-			if($vpndata['users'][$_REQUEST["token"]]['status']=='1'){
+			if ($vpndata['users'][$_REQUEST["token"]]['status']=='1') {
 				$body='<h1>Key is not active yet!</h1>';
-			}elseif($vpndata['users'][$_REQUEST["token"]]['status']=='2'){
+			}elseif ($vpndata['users'][$_REQUEST["token"]]['status']=='2') {
 				$body='<h1 color="red">Account Banned!</h1>';
-			}else{
+			}else {
 				//User is go for key, check if key actually is there.
 				$usercrt="/etc/openvpn/easy-rsa/2.0/keys/".$token.".crt";
 				$userkey="/etc/openvpn/easy-rsa/2.0/keys/".$token.".key";
 				$cacrt="/etc/openvpn/easy-rsa/2.0/keys/ca.crt";
 				$cfgtmpl="/etc/openvpn/easy-rsa/2.0/template.ovpn";
-				if(!file_exists($usercrt)){$body="<h1>User Cert not found!</h1>";genHtml($body);exit();}
-				if(!file_exists($userkey)){$body="<h1>User Key not found!</h1>";genHtml($body);exit();}
-				if(!file_exists($cacrt)){$body="<h1>CA File Not Found!</h1>";genHtml($body);exit();}
-				if(!file_exists($cfgtmpl)){$body="<h1>Stock Config Not Found!</h1>";genHtml($body);exit();}
+				if (!file_exists($usercrt)) {$body="<h1>User Cert not found!</h1>";genHtml($body);exit();}
+				if (!file_exists($userkey)) {$body="<h1>User Key not found!</h1>";genHtml($body);exit();}
+				if (!file_exists($cacrt)) {$body="<h1>CA File Not Found!</h1>";genHtml($body);exit();}
+				if (!file_exists($cfgtmpl)) {$body="<h1>Stock Config Not Found!</h1>";genHtml($body);exit();}
 				header('Content-Type: application/octet-stream');
-				header("Content-Transfer-Encoding: Binary"); 
-				header("Content-disposition: attachment; filename=\"" . $token . ".ovpn\""); 
+				header("Content-Transfer-Encoding: Binary");
+				header("Content-disposition: attachment; filename=\"" . $token . ".ovpn\"");
 				$ovpn=file_get_contents($cfgtmpl);
 				$ovpn=$ovpn.'
 <ca>
@@ -219,14 +257,14 @@ if(!isset($_REQUEST["token"])){
 ';
 				print normalize($ovpn);
 				exit();
-				
+
 			}
-		}elseif($_REQUEST["action"]=="showadmin"){
-			if($vpndata['users'][$token]['authority'] != 1){$body="<h1>You're not an admin!</h1>";genHtml($body);exit();}
+		}elseif ($_REQUEST["action"]=="showadmin") {
+			if ($vpndata['users'][$token]['authority'] != 1) {$body="<h1>You're not an admin!</h1>";genHtml($body);exit();}
 			$body='<form action="?token='.$token.'&amp;action=doadmin" method="POST">';
 			$body=$body.'<h2>Inactive Users</h2><br><table class="table table=striped">';
-			foreach($vpndata['users'] as &$listuser){
-				if ($listuser['status']==1){
+			foreach ($vpndata['users'] as &$listuser) {
+				if ($listuser['status']==1) {
 					//print Unchanged, Activate or Deny options
 					$body=$body.'<tr>
 					<td>'.$listuser["username"].'</td>
@@ -236,8 +274,8 @@ if(!isset($_REQUEST["token"])){
 				}
 			}
 			$body=$body.'</table><br><h2>Active Users</h2><br><table class="table table=striped">';
-			foreach($vpndata['users'] as &$listuser){
-				if ($listuser['status']==0){
+			foreach ($vpndata['users'] as &$listuser) {
+				if ($listuser['status']==0) {
 					//print Active or Banned options
 					$body=$body.'<tr>
 					<td>'.$listuser["username"].'</td>
@@ -246,17 +284,17 @@ if(!isset($_REQUEST["token"])){
 				}
 			}
 			$body=$body.'</table><br><button type="submit" class="btn btn-default">Submit</button>';
-		}elseif($_REQUEST["action"]=="doadmin"){
-			if($vpndata['users'][$token]['authority'] != 1){$body="<h1>You're not an admin!</h1>";genHtml($body);exit();}
-			foreach($_REQUEST as $requestvar){
-				$requestvare=explode('-',$requestvar);
-				if(isset($vpndata['users'][$requestvare[0]]["status"])){
-					if ($requestvare[1]=='zero'){
+		}elseif ($_REQUEST["action"]=="doadmin") {
+			if ($vpndata['users'][$token]['authority'] != 1) {$body="<h1>You're not an admin!</h1>";genHtml($body);exit();}
+			foreach ($_REQUEST as $requestvar) {
+				$requestvare=explode('-', $requestvar);
+				if (isset($vpndata['users'][$requestvare[0]]["status"])) {
+					if ($requestvare[1]=='zero') {
 						$vpndata['users'][$requestvare[0]]["status"]=0;
 						exec("/etc/openvpn/easy-rsa/2.0/usermgmt.sh ".$requestvare[0]." \"".$vpndata['users'][$requestvare[0]]['username']."\"");
-					}elseif ($requestvare[1]=='one'){
+					}elseif ($requestvare[1]=='one') {
 						$vpndata['users'][$requestvare[0]]["status"]=1;
-					}elseif ($requestvare[1]=='two'){
+					}elseif ($requestvare[1]=='two') {
 						$vpndata['users'][$requestvare[0]]["status"]=2;
 						exec("/etc/openvpn/easy-rsa/2.0/usermgmt.sh ".$requestvare[0]." --delete");
 					}
@@ -264,12 +302,12 @@ if(!isset($_REQUEST["token"])){
 			}
 			header("HTTP/1.1 302 Found");
 			header("Location: ?token=".$token."&action=showadmin");
-		}else{$body='<h1>Error!</h1>';}
+		}else {$body='<h1>Error!</h1>';}
 	}
 }
 //if(isset($doGen)){if($doGen!==false){genHtml($body);}}else{
 genHtml($body);
 //}
-file_put_contents("/etc/openvpn/vpndata.json",json_encode($vpndata));
+file_put_contents("/etc/openvpn/vpndata.json", json_encode($vpndata));
 
 ?>
