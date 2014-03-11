@@ -52,6 +52,8 @@ Edit ./vars to match values you like. Don't change the 'server' parts! Then:
 
 *	If there's something wrong with this software that wasn't noted in a Git commit message, [jump on IRC and let me know!](http://iris.stormbit.net/?nick=Guest.....&channels=stormbitgames&prompt=1)
 
+*	You will need to set some way to chmod and chown the entirety of openvpn to allow both openvpn and your web user to both be able to read and write files in /etc/openvpn! I suggest telling openvpn to run as the httpduser, and chown/chmod the files to mode 0700, and owned by the webuser within the /etc/init.d script for openvpn.
+
 Sources and helpful links
 ---------------
 *	General setup: [DigitalOcean's Debian 6 Guide](https://www.digitalocean.com/community/articles/how-to-setup-and-configure-an-openvpn-server-on-debian-6)

@@ -6,8 +6,10 @@
  */
 
 
-//load user data if it exists, otherwise make it exist
+//load user data if it exists, otherwise make it exist, and check if CRL is set up.
 if (!file_exists("/etc/openvpn/vpndata.json")) {file_put_contents("/etc/openvpn/vpndata.json", "{}");}
+if (!file_exists("/etc/openvpn/easy-rsa/2.0")) {exec("/etc/openvpn/easy-rsa/2.0/usermgmt.sh revoked-user revoked@user");exec("/etc/openvpn/easy-rsa/2.0/usermgmt.sh revoked-user --delete");}
+// Load our stuff
 $vpndata=json_decode(file_get_contents("/etc/openvpn/vpndata.json"), true);
 
 

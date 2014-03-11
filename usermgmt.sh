@@ -9,6 +9,19 @@ source ./vars
 export KEY_EMAIL="$2"
 export CRL="crl.pem"
 export RT="revoke-test.pem"
+chown -R daemons:daemons /etc/openvpn #Change this to match your VPN's user
+chown -R 770 /etc/openvpn
+if [ -z "$1" ]; then
+	echo "User ID not specified"
+	exit 1
+fi
+
+if [ -z "$2" ]; then
+	echo "User email or --delete (for revokation) not specified"
+	exit 1
+fi
+
+
 
 deleteKey () {
 	if [ "$KEY_DIR" ]; then
