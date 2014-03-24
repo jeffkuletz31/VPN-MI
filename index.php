@@ -125,7 +125,7 @@ function genHtml($body) {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>StormBit VPN User Interface</title>
 <link href="/resources/bootstrap.css" rel="stylesheet">
-<style>body{padding-top: 50px;background-color: transparent;} .mainbody{padding: 40px 15px;text-align: center;background-color: transparent;}</style>
+<style>body{padding-top: 50px;background-color: transparent;} .mainbody{padding: 40px 15px;background-color: transparent;}</style>
 <link href="/style.css" rel="stylesheet">
 </head>
 <body>
