@@ -124,11 +124,12 @@ function genHtml($body) {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>StormBit VPN User Interface</title>
-	<link href="/resources/bootstrap.css" rel="stylesheet">
-	<style>body { padding-top: 50px; } .mainbody { padding: 40px 15px; text-align: center; } .nocenter { text-align: left; }</style>
+<link href="/resources/bootstrap.css" rel="stylesheet">
+<style>body{padding-top: 50px;background-color: transparent;} .mainbody{padding: 40px 15px;text-align: center;background-color: transparent;}</style>
+<link href="/style.css" rel="stylesheet">
 </head>
 <body>
-	<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
